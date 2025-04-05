@@ -1,0 +1,65 @@
+import java.util.*;
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) {
+        val = x;
+        left = null;
+        right = null;
+    }
+}
+
+public class Solution {
+
+    static class Result {
+        boolean isSumTree;
+        int sum;
+        Result(boolean isSumTree, int sum) {
+            this.isSumTree = isSumTree;
+            this.sum = sum;
+        }
+    }
+
+    public int solve(TreeNode A) {
+        return isSumTreeHelper(A).isSumTree ? 1 : 0;
+    }
+
+    private Result isSumTreeHelper(TreeNode node) {
+        if (node == null) return new Result(true, 0);
+        if (node.left == null && node.right == null)
+            return new Result(true, node.val);
+
+        Result left = isSumTreeHelper(node.left);
+        Result right = isSumTreeHelper(node.right);
+
+        boolean isCurrentSumTree = left.isSumTree && right.isSumTree && (node.val == left.sum + right.sum);
+        int totalSum = node.val + left.sum + right.sum;
+
+        return new Result(isCurrentSumTree, isCurrentSumTree ? totalSum : 0);
+    }
+
+    private static TreeNode buildTree(Queue<Integer> input) {
+        if (input.isEmpty()) return null;
+        int val = input.poll();
+        if (val == -1) return null;
+
+        TreeNode node = new TreeNode(val);
+        node.left = buildTree(input);
+        node.right = buildTree(input);
+        return node;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String[] nodes = sc.nextLine().split(" ");
+        Queue<Integer> input = new LinkedList<>();
+        for (String s : nodes) {
+            input.add(Integer.parseInt(s));
+        }
+
+        TreeNode root = buildTree(input);
+        Solution sol = new Solution();
+        System.out.println(sol.solve(root));
+    }
+}
